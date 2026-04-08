@@ -102,30 +102,19 @@ void *copy_compressed_data_interleaved(void *arg) {
  * - requested_threads: Number of threads to use for processing
  */
 
-uint8_t *prepare_python_return_buffer(
+/*
+ * Fill a pre-allocated result buffer with compressed output.
+ * The caller owns resultBuf and is responsible for its lifecycle.
+ * Returns 0 on success, -1 on error (with Python exception set).
+ */
+int prepare_python_return_buffer(
     size_t header_len, uint32_t numBuf, size_t numChunks, uint8_t *header,
     uint8_t ***compressedData, uint32_t **compChunksSize,
     uint8_t **compChunksType, const size_t *totalCompressedSize,
-    size_t *resBufSize, int requested_threads) {
-  // Calculate buffer size
-  *resBufSize = header_len;
+    size_t resBufSize, int requested_threads,
+    uint8_t *resultBuf) {
   size_t compChunksTypeLen = numBuf * numChunks * sizeof(uint8_t);
   size_t cumulativeChunksSizeLen = numBuf * numChunks * sizeof(size_t);
-  *resBufSize += compChunksTypeLen + cumulativeChunksSizeLen;
-
-  for (uint32_t b = 0; b < numBuf; b++) {
-    *resBufSize += totalCompressedSize[b];
-  }
-
-  // Allocate result buffer
-  memcpy(&header[24], resBufSize, sizeof(size_t));
-  uint8_t *resultBuf = (uint8_t *)malloc(*resBufSize);
-  if (!resultBuf) {
-    PyErr_SetString(
-        PyExc_MemoryError,
-        "Failed to allocate memory for result buffer in split function");
-    return NULL;
-  }
 
   // Copy header and chunk types
   size_t offset = 0;
@@ -169,8 +158,7 @@ uint8_t *prepare_python_return_buffer(
   // Calculate buffer offsets
   size_t *bufferOffsets = (size_t *)malloc(numBuf * sizeof(size_t));
   if (!bufferOffsets) {
-    free(resultBuf);
-    return NULL;
+    return -1;
   }
 
   bufferOffsets[0] = offset;
@@ -185,12 +173,11 @@ uint8_t *prepare_python_return_buffer(
   size_t *threadOffsets = calloc(num_threads * numBuf, sizeof(size_t));
 
   if (!threads || !thread_args || !threadOffsets) {
-    free(resultBuf);
     free(bufferOffsets);
     free(threads);
     free(thread_args);
     free(threadOffsets);
-    return NULL;
+    return -1;
   }
 
   // Launch threads
@@ -224,8 +211,7 @@ uint8_t *prepare_python_return_buffer(
       free(thread_args);
       free(threadOffsets);
       free(bufferOffsets);
-      free(resultBuf);
-      return NULL;
+      return -1;
     }
   }
 
@@ -240,7 +226,7 @@ uint8_t *prepare_python_return_buffer(
   free(threadOffsets);
   free(bufferOffsets);
 
-  return resultBuf;
+  return 0;
 }
 
 ////////////////////////////////////////////////////////////
@@ -404,6 +390,7 @@ PyObject *py_zipnn_core(PyObject *self, PyObject *args) {
       threads;
   size_t origChunkSize;
   float compThreshold;
+  PyObject *py_result = NULL;
   // uint8_t isPrint = 0;
 
   // struct timeval startTime, endTime;
@@ -565,35 +552,32 @@ continue_processing:
   //    (endTimeReal.tv_usec - startTimeReal.tv_usec) / 1e6;
   // printf("compress ML1: %f seconds\n", compressMl1TimeReal);
 
-  // Prepare final result buffe
-  PyObject *py_result;
-  uint8_t *resultBuf;
-  size_t resBufSize;
-
-  // printf("start prepare: %f seconds\n", compressMl1TimeReal);
-  // printf("compChunksSize[0][0] %u\n", compChunksSize[0][0]);
-  resultBuf = prepare_python_return_buffer(
-      header.len, numBuf, numChunks, header.buf, compressedData, compChunksSize,
-      compChunksType, totalCompressedSize, &resBufSize, threads);
-
-  if (resultBuf == NULL) goto compression_error; 
-  // gettimeofday(&endTimeReal, NULL);
-  // double compressPrepareTimeReal =
-  //    (endTimeReal.tv_sec - startTimeReal.tv_sec) +
-  //    (endTimeReal.tv_usec - startTimeReal.tv_usec) / 1e6;
-  // printf("compress Prepare: %f seconds\n", compressPrepareTimeReal);
-
-  if (resultBuf == NULL) {
-    // Free all Mallocs
-    // print Error
-    return NULL;
+  // Calculate result buffer size
+  size_t resBufSize = header.len;
+  resBufSize += numBuf * numChunks * sizeof(uint8_t);
+  resBufSize += numBuf * numChunks * sizeof(size_t);
+  for (uint32_t b_sz = 0; b_sz < numBuf; b_sz++) {
+    resBufSize += totalCompressedSize[b_sz];
   }
 
-  // gettimeofday(&startTimeReal, NULL);
-  // Create Python buffer view
-  Py_buffer view; // create buffer to avoid copy
-  PyBuffer_FillInfo(&view, NULL, resultBuf, resBufSize, 0, PyBUF_WRITABLE);
-  py_result = PyMemoryView_FromBuffer(&view);
+  // Update header with compressed size
+  memcpy(((uint8_t *)header.buf) + 24, &resBufSize, sizeof(size_t));
+
+  // Zero-copy: allocate Python bytes and fill its internal buffer directly
+  py_result = PyBytes_FromStringAndSize(NULL, resBufSize);
+  if (py_result == NULL) {
+    goto compression_error;
+  }
+  uint8_t *resultBuf = (uint8_t *)PyBytes_AS_STRING(py_result);
+
+  if (prepare_python_return_buffer(
+          header.len, numBuf, numChunks, header.buf, compressedData,
+          compChunksSize, compChunksType, totalCompressedSize, resBufSize,
+          threads, resultBuf) != 0) {
+    Py_DECREF(py_result);
+    py_result = NULL;
+    goto compression_error;
+  }
 
   // gettimeofday(&endTimeReal, NULL);
   // double freeTimeReal = (endTimeReal.tv_sec - startTimeReal.tv_sec) +
@@ -647,11 +631,15 @@ continue_processing:
     free(compChunksSize);
   }
 
+  // Release Py_buffer references
+  PyBuffer_Release(&header);
+  PyBuffer_Release(&data);
+
   return py_result;
 
   // Handle Error
-  /**/
   compression_error:
+    Py_XDECREF(py_result);
     if (buffers) {
       for (size_t c = 0; c < numChunks; c++) {
 	if (buffers[c] != NULL) {
@@ -698,6 +686,9 @@ continue_processing:
       }
       free(compChunksSize);
     }
+    // Release Py_buffer references
+    PyBuffer_Release(&header);
+    PyBuffer_Release(&data);
     return NULL;
 }
 
@@ -940,7 +931,8 @@ PyObject *py_combine_dtype(PyObject *self, PyObject *args) {
   size_t compChunksLen[numBuf][numChunks]; // Length of each compressed chunk
 
   // Initialize decompression buffers and metadata
-  uint8_t *resultBuf = NULL; // Final output buffer
+  PyObject *py_result = NULL; // Python output object (owns resultBuf memory)
+  uint8_t *resultBuf = NULL;  // Points into py_result's internal buffer
   size_t decompLen[numChunks]
                   [numBuf]; // Decompressed length for each chunk/buffer
   uint8_t ***deCompressedDataPtr =
@@ -1027,12 +1019,13 @@ PyObject *py_combine_dtype(PyObject *self, PyObject *args) {
     }
   }
 
-  resultBuf = malloc(origSize);
-  if (!resultBuf) {
-        PyErr_SetString(PyExc_MemoryError, "Failed to allocate resultBuf");
-        goto decompression_error;
-    return NULL;
+  // Zero-copy: allocate PyByteArray and decompress directly into its buffer.
+  // PyByteArray is mutable, so np.frombuffer / torch.from_numpy stay writable.
+  py_result = PyByteArray_FromStringAndSize(NULL, origSize);
+  if (!py_result) {
+    goto decompression_error;
   }
+  resultBuf = (uint8_t *)PyByteArray_AS_STRING(py_result);
   // eTime = clock();
   // double metadataTime = (double)(eTime - sTime) / CLOCKS_PER_SEC;
   //  printf ("metadataTime %f\n", metadataTime);
@@ -1107,7 +1100,6 @@ cleanup_threads:
   return NULL;
 
   ////////////// Finish Multi threading /////////////////////////////
-  PyObject *py_result;
   //   endTime = clock();
   //   double decompressTime = (double)(endTime - startTime) / CLOCKS_PER_SEC;
   // gettimeofday(&endTimeReal, NULL);
@@ -1120,10 +1112,9 @@ cleanup_threads:
   // clock_t sT, eT;
   // sT = clock();
 
-  Py_buffer view; // create buffer to avoid copy
 continue_processing:
-  PyBuffer_FillInfo(&view, NULL, resultBuf, origSize, 0, PyBUF_WRITABLE);
-  py_result = PyMemoryView_FromBuffer(&view);
+  // Zero-copy: py_result already owns the decompressed data buffer.
+  // resultBuf points into py_result's internal storage — no copy needed.
   // eT = clock();
   // double resultTime = (double)(eT - sT) / CLOCKS_PER_SEC;
   //   printf ("resultTime %f\n", resultTime);
@@ -1137,8 +1128,9 @@ continue_processing:
   // double freeTime = (double)(eT - sT) / CLOCKS_PER_SEC;
   //   printf ("free %f\n", freeTime);
 
-  //  free(resultBuf);
-  //  PyBuffer_Release(&data);
+  // Release Py_buffer reference
+  PyBuffer_Release(&data);
+
   return py_result;
 
   // Handle Error
@@ -1157,8 +1149,9 @@ continue_processing:
     free(deCompressedDataPtr);
   }
 
-  if (resultBuf) {
-    free(resultBuf);	  
-  }
+  Py_XDECREF(py_result);
+
+  // Release Py_buffer reference
+  PyBuffer_Release(&data);
   return NULL;
 }
