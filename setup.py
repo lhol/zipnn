@@ -29,8 +29,22 @@ zipnn_core_extension = Extension(
         "include/FiniteStateEntropy/lib/hist.c",
     ],
     include_dirs=["include/FiniteStateEntropy/lib/", "csrc/"],
-    extra_compile_args=["-O3", "-Wall", "-Wextra"],
-    extra_link_args=["-O3", "-Wall", "-Wextra"],
+    # Use compiler-appropriate flags. POSIX/GCC flags like -O3, -Wall break MSVC on Windows.
+    # Keep link args empty by default; add only if you know specific linker flags are required.
+    #import sys
+#if sys.platform.startswith("win"):
+#    extra_compile_args = ["/O2", "/arch:AVX2"]
+#else:
+#    extra_compile_args = ["-O3", "-march=native"]
+#Original:
+#    extra_compile_args=["-O3", "-Wall", "-Wextra"],
+#    extra_link_args=["-O3", "-Wall", "-Wextra"],
+    extra_compile_args=(
+        ['/O2', '/W3'] if os.name == 'nt' else ['-O3', '-Wall', '-Wextra']
+    ),
+    extra_link_args=(
+        [] if os.name == 'nt' else ['-O3', '-Wall', '-Wextra']
+    ),
 )
 
 setup(
