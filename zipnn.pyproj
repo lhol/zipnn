@@ -1,0 +1,205 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Build">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9290b58d-4463-4b15-9ae6-afac44b6f15b}</ProjectGuid>
+    <ProjectHome />
+    <StartupFile>setup.py</StartupFile>
+    <SearchPath />
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{1b580a1a-fdb3-4b32-83e1-6407eb2722e6};{349c5851-65df-11da-9384-00065b846f21};{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <LaunchProvider>Web launcher</LaunchProvider>
+    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
+    <WebBrowserUrl>http://localhost</WebBrowserUrl>
+    <TestFramework>Pytest</TestFramework>
+    <IsWindowsApplication>False</IsWindowsApplication>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <PropertyGroup>
+    <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="architecture.md" />
+    <Content Include="images\abs_array.png" />
+    <Content Include="images\altmetric.html" />
+    <Content Include="images\exp_histogram.png" />
+    <Content Include="images\flow.png" />
+    <Content Include="images\grouping.png" />
+    <Content Include="images\hf_download_upload.png" />
+    <Content Include="images\signbit.png" />
+    <Content Include="images\signbit_move.png" />
+    <Content Include="images\table1.png" />
+    <Content Include="images\table2.png" />
+    <Content Include="images\updated_flow.png" />
+    <Content Include="images\ZipNN-logo-v2.png" />
+    <Content Include="images\ZipNN-logo.png" />
+    <Content Include="include\zstd\build\cmake\CMakeLists.txt" />
+    <Content Include="include\zstd\build\cmake\contrib\CMakeLists.txt" />
+    <Content Include="include\zstd\build\cmake\contrib\gen_html\CMakeLists.txt" />
+    <Content Include="include\zstd\build\cmake\contrib\pzstd\CMakeLists.txt" />
+    <Content Include="include\zstd\build\cmake\lib\CMakeLists.txt" />
+    <Content Include="include\zstd\build\cmake\programs\CMakeLists.txt" />
+    <Content Include="include\zstd\build\cmake\tests\CMakeLists.txt" />
+    <Content Include="include\zstd\build\meson\meson_options.txt" />
+    <Content Include="include\zstd\build\single_file_libs\examples\shell.html" />
+    <Content Include="include\zstd\build\single_file_libs\examples\testcard.png" />
+    <Content Include="include\zstd\contrib\pzstd\images\Cspeed.png" />
+    <Content Include="include\zstd\contrib\pzstd\images\Dspeed.png" />
+    <Content Include="include\zstd\doc\images\cdict_v136.png" />
+    <Content Include="include\zstd\doc\images\CSpeed2.png" />
+    <Content Include="include\zstd\doc\images\DCspeed5.png" />
+    <Content Include="include\zstd\doc\images\dict-cr.png" />
+    <Content Include="include\zstd\doc\images\dict-cs.png" />
+    <Content Include="include\zstd\doc\images\dict-ds.png" />
+    <Content Include="include\zstd\doc\images\DSpeed3.png" />
+    <Content Include="include\zstd\doc\images\zstd_cdict_v1_3_5.png" />
+    <Content Include="include\zstd\doc\images\zstd_logo86.png" />
+    <Content Include="include\zstd\doc\zstd_manual.html" />
+    <Content Include="LICENSE.txt" />
+    <Content Include="requirements.txt" />
+    <Content Include="scripts\scripts.txt" />
+    <Content Include="zipnn.egg-info\dependency_links.txt" />
+    <Content Include="zipnn.egg-info\requires.txt" />
+    <Content Include="zipnn.egg-info\SOURCES.txt" />
+    <Content Include="zipnn.egg-info\top_level.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="additionalTools\ASimilarityCalculator.py" />
+    <Compile Include="examples\gpt2-zipnn_from_pretrained.py" />
+    <Compile Include="examples\gpt2-zipnn_vllm.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_clip_vit_base_patch16_example.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_granite3_8b_instruct_example.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_granite_3b_example.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_granite_example.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_jamba_example.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_llama_3.2_example.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_llama_example.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_phi_example.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_pixtral_12b_example.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_qwen_example.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_roberta_base_example.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_solar_example.py" />
+    <Compile Include="examples\huggingface exmaples\huggingface_wav2vec_example.py" />
+    <Compile Include="examples\others\byte_tensor.py" />
+    <Compile Include="examples\others\streaming_examples.py" />
+    <Compile Include="include\zstd\build\meson\GetZstdLibraryVersion.py" />
+    <Compile Include="include\zstd\build\meson\InstallSymlink.py" />
+    <Compile Include="include\zstd\build\meson\tests\valgrindTest.py" />
+    <Compile Include="include\zstd\build\single_file_libs\combine.py" />
+    <Compile Include="include\zstd\contrib\freestanding_lib\freestanding.py" />
+    <Compile Include="include\zstd\tests\automated_benchmarking.py" />
+    <Compile Include="include\zstd\tests\check_size.py" />
+    <Compile Include="include\zstd\tests\cli-tests\run.py" />
+    <Compile Include="include\zstd\tests\DEPRECATED-test-zstd-speed.py" />
+    <Compile Include="include\zstd\tests\fuzz\fuzz.py" />
+    <Compile Include="include\zstd\tests\rateLimiter.py" />
+    <Compile Include="include\zstd\tests\test-license.py" />
+    <Compile Include="include\zstd\tests\test-zstd-versions.py" />
+    <Compile Include="scripts\zipnn_compress_file.py" />
+    <Compile Include="scripts\zipnn_compress_file_delta.py" />
+    <Compile Include="scripts\zipnn_compress_path.py" />
+    <Compile Include="scripts\zipnn_compress_safetensors.py" />
+    <Compile Include="scripts\zipnn_decompress_file.py" />
+    <Compile Include="scripts\zipnn_decompress_file_delta.py" />
+    <Compile Include="scripts\zipnn_decompress_path.py" />
+    <Compile Include="scripts\zipnn_decompress_safetensors.py" />
+    <Compile Include="setup.py" />
+    <Compile Include="simple_example.py" />
+    <Compile Include="simple_example_granite.py" />
+    <Compile Include="simple_example_torch.py" />
+    <Compile Include="simple_example_uint.py" />
+    <Compile Include="tests\simple_stress_tests.py" />
+    <Compile Include="tests\test_decompress_throughput.py" />
+    <Compile Include="tests\test_memory_leak.py" />
+    <Compile Include="tests\test_one_model.py" />
+    <Compile Include="tests\test_suit.py" />
+    <Compile Include="zipnn\util_header.py" />
+    <Compile Include="zipnn\util_patch.py" />
+    <Compile Include="zipnn\util_safetensors.py" />
+    <Compile Include="zipnn\util_torch.py" />
+    <Compile Include="zipnn\zipnn.py" />
+    <Compile Include="zipnn\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="additionalTools" />
+    <Folder Include="examples" />
+    <Folder Include="examples\huggingface exmaples" />
+    <Folder Include="examples\others" />
+    <Folder Include="images" />
+    <Folder Include="include\" />
+    <Folder Include="include\zstd\" />
+    <Folder Include="include\zstd\build\" />
+    <Folder Include="include\zstd\build\cmake" />
+    <Folder Include="include\zstd\build\cmake\contrib" />
+    <Folder Include="include\zstd\build\cmake\contrib\gen_html" />
+    <Folder Include="include\zstd\build\cmake\contrib\pzstd" />
+    <Folder Include="include\zstd\build\cmake\lib" />
+    <Folder Include="include\zstd\build\cmake\programs" />
+    <Folder Include="include\zstd\build\cmake\tests" />
+    <Folder Include="include\zstd\build\meson" />
+    <Folder Include="include\zstd\build\meson\tests" />
+    <Folder Include="include\zstd\build\single_file_libs" />
+    <Folder Include="include\zstd\build\single_file_libs\examples" />
+    <Folder Include="include\zstd\contrib\" />
+    <Folder Include="include\zstd\contrib\freestanding_lib" />
+    <Folder Include="include\zstd\contrib\pzstd\" />
+    <Folder Include="include\zstd\contrib\pzstd\images" />
+    <Folder Include="include\zstd\doc" />
+    <Folder Include="include\zstd\doc\images" />
+    <Folder Include="include\zstd\tests" />
+    <Folder Include="include\zstd\tests\cli-tests" />
+    <Folder Include="include\zstd\tests\fuzz" />
+    <Folder Include="scripts" />
+    <Folder Include="tests" />
+    <Folder Include="zipnn" />
+    <Folder Include="zipnn.egg-info" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="env\">
+      <Id>env</Id>
+      <Version>3.13.12</Version>
+      <Description>env (CPython 3.13.12 (64-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X64</Architecture>
+    </Interpreter>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <AutoAssignPort>True</AutoAssignPort>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

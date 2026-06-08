@@ -11,6 +11,7 @@ static PyMethodDef SplitMethods[] = {
      "Split a bytearray into four buffers using dtype16"},
     {"combine_dtype", py_combine_dtype, METH_VARARGS,
      "Combine four buffers into a single bytearray using dtype16"},
+    {NULL, NULL, 0, NULL}  /* Sentinel - required terminator for PyModule_Create */
 };
 
 // Module definition
