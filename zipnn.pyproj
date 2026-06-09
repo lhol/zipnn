@@ -59,6 +59,7 @@
     <Content Include="include\zstd\doc\images\zstd_logo86.png" />
     <Content Include="include\zstd\doc\zstd_manual.html" />
     <Content Include="LICENSE.txt" />
+    <Content Include="RELEASE.md" />
     <Content Include="requirements.txt" />
     <Content Include="scripts\scripts.txt" />
     <Content Include="zipnn.egg-info\dependency_links.txt" />

@@ -60,7 +60,7 @@ zipnn_core_extension = Extension(
 )
 
 setup(
-    name="zipnn",
+    name="zipnn-compat",
     version="0.5.4",
     author="ZipNN Contributors",
     description="A Lossless Compression Library for AI pipelines",
