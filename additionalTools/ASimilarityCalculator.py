@@ -2,7 +2,10 @@
 # https://huggingface.co/JosephusCheung/ASimilarityCalculatior/blob/main/qwerty.py
 # stated that it is released with a MIT Licence with no author / copyright information owner information included (only had the MIT Template in the repo
 # The Readme said: Made by Nyanko Lepsoni and RcINS.
-# Also mentioned/linked at https://fxis.ai/edu/how-to-use-the-asimilaritycalculator/
+# Also mentioned/linked at 
+# https://fxis.ai/edu/how-to-use-the-asimilaritycalculator/
+# and 
+# https://www.promptlayer.com/models/asimilaritycalculatior/
 from safetensors.torch import load_file
 import sys
 import torch
